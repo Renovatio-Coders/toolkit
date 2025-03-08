@@ -36,6 +36,16 @@ group = "com.renovatio.toolkit"
 version = System.getenv("VERSION") ?: "0.0.1-SNAPSHOT" // GitHub Actions에서 VERSION 제공 가능
 
 publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Renovatio-Coders/toolkit")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME") ?: ""
+                password = System.getenv("GITHUB_TOKEN") ?: ""
+            }
+        }
+    }
     publications {
         create<MavenPublication>("gpr") {
             from(components["java"])
