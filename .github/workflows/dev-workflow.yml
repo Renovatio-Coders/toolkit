@@ -19,54 +19,22 @@ jobs:
       - name: Determine changed modules
         id: changed-modules
         run: |
-          # 이전 커밋이 없을 경우 대비하여 HEAD~1 사용
-          if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            BASE_COMMIT="HEAD~1"
-          else
-            BASE_COMMIT=$(git rev-list --max-parents=0 HEAD)  # 최초 커밋일 경우
-          fi
-
-          echo "Comparing changes with base commit: $BASE_COMMIT"
-
-          # 변경된 파일 목록 확인 (modules/jpa-common/src/ 변경도 포함)
-          MODULES=$(git diff --name-only $BASE_COMMIT HEAD | grep '^modules/' | cut -d'/' -f2 | sort | uniq | jq -R -s -c 'split("\n")[:-1]')
-
-          # 변경된 모듈이 없으면 빈 배열로 설정
-          if [[ -z "$MODULES" || "$MODULES" == "null" ]]; then
-            MODULES="[]"
-          fi
-
+          MODULES=$(git diff --name-only HEAD~1 HEAD | grep '^modules/' | cut -d'/' -f2 | sort | uniq | jq -R -s -c 'split("\n")[:-1]')
+          if [[ -z "$MODULES" || "$MODULES" == "null" ]]; then MODULES="[]"; fi
           echo "modules=$MODULES" >> $GITHUB_OUTPUT
-          echo "Detected modules: $MODULES"
 
   publish:
     needs: determine-modules
-    if: needs.determine-modules.outputs.modules != '[]'  # 변경된 모듈이 있을 때만 실행
+    if: needs.determine-modules.outputs.modules != '[]'
     runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
     strategy:
       matrix:
         module: ${{ fromJson(needs.determine-modules.outputs.modules) }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4.2.0
-        with:
-          fetch-depth: 0  # 모든 커밋 히스토리 가져오기
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4.2.0
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.5'
-
-      - name: Publish changed module (${{ matrix.module }}) to GitHub Packages
+      - name: Publish changed module
         run: ./gradlew :modules:${{ matrix.module }}:publish
         env:
           GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
