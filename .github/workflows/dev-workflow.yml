@@ -16,13 +16,20 @@ jobs:
 
       - name: Determine changed modules
         id: changed-modules
-#        변경된 모듈을 확인 ->
         run: |
           MODULES=$(git diff --name-only HEAD^ HEAD | grep '^modules/' | cut -d'/' -f2 | sort | uniq | jq -R -s -c 'split("\n")[:-1]')
+          
+          # 변경된 모듈이 없으면 기본값 빈 배열 [] 제공
+          if [[ -z "$MODULES" ]]; then
+            MODULES="[]"
+          fi
+
           echo "modules=$MODULES" >> $GITHUB_OUTPUT
+          echo "Detected modules: $MODULES"
 
   publish:
     needs: determine-modules
+    if: needs.determine-modules.outputs.modules != '[]'  # 변경된 모듈이 있을 때만 실행
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -46,7 +53,6 @@ jobs:
           gradle-version: '8.5'
 
       - name: Publish changed module (${{ matrix.module }}) to GitHub Packages
-#       jpa-common 모듈에 변경사항이 생기는경우 ->  ./gradlew :modules:jpa-common:publish
         run: ./gradlew :modules:${{ matrix.module }}:publish
         env:
           GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
