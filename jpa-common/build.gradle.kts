@@ -23,7 +23,8 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("mysql:mysql-connector-java:8.0.33")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc") // DataSource 제공
+    implementation("mysql:mysql-connector-java:8.0.33") // MySQL 드라이버
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
