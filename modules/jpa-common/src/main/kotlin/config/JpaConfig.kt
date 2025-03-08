@@ -16,6 +16,7 @@ import java.util.Properties
  * 변경 commit을 위한 예시 1
  * 변경 commit을 위한 예시 2
  * 변경 commit을 위한 예시 3
+ * 변경 commit을 위한 예시 4
  * */
 @Configuration
 class JpaConfig(private val env: Environment) { // Environment 객체를 주입받아 설정을 동적으로 로드
