@@ -41,7 +41,7 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/Renovatio-Coders/toolkit")
             credentials {
-                username = System.getenv("GITHUB_USERNAME") ?: ""
+                username = System.getenv("GH_USERNAME") ?: ""
                 password = System.getenv("GH_PAT") ?: ""
             }
         }

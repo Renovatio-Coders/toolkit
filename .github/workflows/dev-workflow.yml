@@ -73,5 +73,5 @@ jobs:
       - name: Publish changed module
         run: ./gradlew :modules:${{ matrix.module }}:publish
         env:
-          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
