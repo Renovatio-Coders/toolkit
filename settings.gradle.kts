@@ -3,4 +3,4 @@ plugins {
 }
 rootProject.name = "toolkit"
 
-include("jpa-common")
+include("modules:jpa-common")
