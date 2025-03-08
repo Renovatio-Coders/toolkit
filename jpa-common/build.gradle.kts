@@ -4,11 +4,8 @@ plugins {
     id("java-library")
     kotlin("jvm")
     kotlin("plugin.spring")
-    id("maven-publish") // 외부 배포 가능하도록 설정
+    id("maven-publish")
 }
-
-group = "coders.renovatio.donghang"
-version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
@@ -35,14 +32,24 @@ tasks.test {
     useJUnitPlatform()
 }
 
-// Maven Local 또는 원격 저장소에 배포 가능하도록 설정
+group = "com.renovatio.toolkit"
+version = System.getenv("VERSION") ?: "0.0.1-SNAPSHOT" // GitHub Actions에서 VERSION 제공 가능
+
 publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Renovatio-Coders/toolkit")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME") ?: ""
+                password = System.getenv("GITHUB_TOKEN") ?: ""
+            }
+        }
+    }
     publications {
-        create<MavenPublication>("mavenJava") {
+        create<MavenPublication>("gpr") {
             from(components["java"])
-            groupId = "coders.renovatio.donghang"
             artifactId = "jpa-common"
-            version = "0.0.1-SNAPSHOT"
         }
     }
 }
