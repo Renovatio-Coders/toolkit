@@ -42,7 +42,7 @@ publishing {
             url = uri("https://maven.pkg.github.com/Renovatio-Coders/toolkit")
             credentials {
                 username = System.getenv("GITHUB_USERNAME") ?: ""
-                password = System.getenv("GITHUB_PAT") ?: ""
+                password = System.getenv("GH_PAT") ?: ""
             }
         }
     }
