@@ -1,5 +1,5 @@
 package coders.renovatio.donghang
 
 fun main() {
-    println("Hello World!")
+    println("Hello World! jpa-common")
 }

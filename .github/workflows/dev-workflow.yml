@@ -13,14 +13,17 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4.2.0
+        with:
+          fetch-depth: 0  # 전체 커밋 히스토리 가져오기
 
       - name: Determine changed modules
         id: changed-modules
         run: |
-          MODULES=$(git diff --name-only HEAD^ HEAD | grep '^modules/' | cut -d'/' -f2 | sort | uniq | jq -R -s -c 'split("\n")[:-1]')
-          
-          # 변경된 모듈이 없으면 기본값 빈 배열 [] 제공
-          if [[ -z "$MODULES" ]]; then
+          # 변경된 모듈 감지 (오류 방지 처리)
+          MODULES=$(git diff --name-only HEAD^ HEAD 2>/dev/null | grep '^modules/' | cut -d'/' -f2 | sort | uniq | jq -R -s -c 'split("\n")[:-1]')
+
+          # 변경된 모듈이 없으면 빈 배열 설정
+          if [[ -z "$MODULES" || "$MODULES" == "null" ]]; then
             MODULES="[]"
           fi
 
@@ -40,9 +43,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4.2.0
+        with:
+          fetch-depth: 0  # 전체 커밋 히스토리 가져오기
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.2.0
         with:
           java-version: '21'
           distribution: 'temurin'
