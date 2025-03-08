@@ -64,14 +64,30 @@ jobs:
         with:
           gradle-version: '8.10'
 
-      - name: Debug GitHub Token
+      - name: Debug GitHub Token & Username
         run: |
-          echo "Base64 Encoded GITHUB_TOKEN:"
-          echo $GITHUB_TOKEN | base64
+          echo "Checking GH_PAT and GH_USERNAME..."
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "❌ GITHUB_TOKEN is empty!"
+            exit 1
+          else
+            echo "✅ GITHUB_TOKEN is set."
+          fi
+
+          if [ -z "$GH_USERNAME" ]; then
+            echo "❌ GH_USERNAME is empty!"
+            exit 1
+          else
+            echo "✅ GH_USERNAME is set as $GH_USERNAME."
+          fi
+        env:
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
 
 
       - name: Publish changed module
         run: ./gradlew :modules:${{ matrix.module }}:publish
         env:
-          GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_PAT: ${{ secrets.GH_PAT }}
